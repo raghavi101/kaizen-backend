@@ -15,6 +15,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(122), unique=True)
     hashed_password = Column(String)
+    email = Column(String)
+    profile_pic_url = Column(String, nullable=True)
+    level = Column(Integer, default=0)
+    time_watched = Column(Integer, default=0)
     jwt_token = Column(String(1024))
 
     def hash_password(self, password):
@@ -26,3 +30,11 @@ class User(Base):
     def create_access_token(self, data):
         to_encode = data.copy()
         self.jwt_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+class Friend(Base):
+    __tablename__ = "friend"
+
+    id = Column(Integer, primary_key=True)
+    pk = Column(Integer, nullable=False)
+    fk = Column(Integer, nullable=False)
