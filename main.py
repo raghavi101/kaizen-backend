@@ -1,14 +1,22 @@
-from fastapi import FastAPI, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
+#uvicorn main:app --reload
+from typing import List
+
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-import models
-from database import SessionLocal, engine
+from . import crud, models, schemas
+from .database import SessionLocal, engine
+
 
 app = FastAPI()
 
-# Creates database tables
-models.Base.metadata.create_all(bind=engine)
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 app.add_middleware(
         CORSMiddleware,
@@ -18,12 +26,24 @@ app.add_middleware(
         allow_credentials=True,
     )
 
-def get_db():
-    try:
-        db =  SessionLocal()
-        yield db
-    finally:
-        db.close()
+
+@app.get("/profile")
+def profile_details():
+    return {"Hello": "World"}
+
+
+@app.get("/leaderboard")
+def read_item():
+    pass
+
+@app.get("/search")
+def profile_details():
+    pass
+
+@app.get("/star")
+def profile_details():
+    pass
+
 
 @app.post("/api/register/", status_code=status.HTTP_201_CREATED)
 def register(username: str, password: str, db: Session = Depends(get_db)):
@@ -52,3 +72,4 @@ def index():
     return {
         "message": "Hello, World!"
     }
+ 
